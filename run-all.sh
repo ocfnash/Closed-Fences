@@ -1,6 +1,6 @@
 #!/bin/bash
 
-test_data=test-cases/fence4.in.$1
+test_data=test-cases/fence4.$1.in
 
 echo Coq implementation:
 cat $test_data | coq/fence4

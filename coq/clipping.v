@@ -56,8 +56,8 @@ Definition clipByOneSide (v : ViewPort) (l : LineSeg) (evClipable : isClipable v
 Inductive ClippingResult : Type :=
   | Visible : LineSeg -> ClippingResult
   | Invisible : ClippingResult
-  | Unclipable : IsClipableResult -> ClippingResult (* If we wanted to be really pedantic, we could dependently require evidence that not CR_Clipable *)
-  | ThroughEye : ClippingResult.
+  | Unclipable : IsClipableResult -> ClippingResult
+  | CollinearViewPort : Point -> LineSeg -> ClippingResult.
 
 Fixpoint clipByAllSides (v : ViewPort) (ls : list LineSeg) : ClippingResult :=
   match ls with
@@ -112,16 +112,16 @@ refine(
   let f := fun inst : prod LineSeg (list LineSeg) =>
     match inst with
     | (lv, edges) =>
-      let throughEye := isPointOnLine_b eye (lineFromLineSeg lv) in
-        match throughEye as throughEye' return (throughEye = throughEye' -> _) with
-        | true => fun _ => ThroughEye
+      let collinearViewPort := isPointOnLine_b eye (lineFromLineSeg lv) in
+        match collinearViewPort as collinearViewPort' return (collinearViewPort = collinearViewPort' -> _) with
+        | true => fun _ => CollinearViewPort eye lv
         | false => fun evNotThrough => clipByAllSides (viewPort eye lv _ _) edges
-        end (eq_refl throughEye)
+        end (eq_refl collinearViewPort)
     end in
   map f (getClippingData ps)
 ).
   - apply affine_point_is_affine.
-  - rewrite <- isPointOnLine_refl. unfold throughEye in evNotThrough. rewrite -> evNotThrough. unfold not. intros H. inversion H.
+  - rewrite <- isPointOnLine_refl. unfold collinearViewPort in evNotThrough. rewrite -> evNotThrough. unfold not. intros H. inversion H.
 Defined.
 
 Definition getPointFromCoords (coords : prod Z Z) :=

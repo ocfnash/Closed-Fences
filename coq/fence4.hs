@@ -10,10 +10,10 @@ instance Prelude.Show ClippingResult where
     show (Visible l) = "Visible: { l: " ++ (Prelude.show l) ++ " }"
     show Invisible = "Invisible"
     show (Unclipable cr) = Prelude.show cr
-    show ThroughEye = "Througheye"
+    show (CollinearViewPort e l) = "CollinearViewPort : { e: " ++ (Prelude.show e) ++ ", l: " ++ (Prelude.show l) ++ " }"
 
 instance Prelude.Show Q where
-  show (Qmake p q) = (Prelude.show p) ++ "/" ++ (Prelude.show q)
+  show (Qmake p q) = (Prelude.show p) ++ (if q == 1 then "" else "/" ++ (Prelude.show q))
 
 instance Prelude.Show Triple0 where
   show (Triple a b c) = "[" ++ (Prelude.show a) ++ ", " ++ (Prelude.show b) ++ ", " ++ (Prelude.show c) ++ "]"

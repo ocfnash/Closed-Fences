@@ -83,14 +83,6 @@ Proof.
   reflexivity.
 Defined.
 
-Lemma solve_det2 : forall a b c d : Qc,
-  d <> 0 -> d*a = c*b -> a = b / d * c.
-Proof.
-  intros a b c d Hd Heq.
-  assert (H : d * a / d = a). { field. apply Hd. }
-  rewrite <- H. rewrite -> Heq. field. apply Hd.
-Defined.
-
 Lemma eqt_spec: forall (x y z x' y' z' : Qc) (ev : isNotZero (triple x y z)) (ev' : isNotZero (triple x' y' z')),
   eqt (triple x y z) (triple x' y' z') <-> exists t, t<>0 /\ x' = t*x /\ y' = t*y /\ z' = t*z.
 Proof.
@@ -164,10 +156,6 @@ Definition eqp_b (p1 p2 : Point) :=
   end.
 
 Definition eqp (p1 p2 : Point) := eqp_b p1 p2 = true.
-
-Lemma eqp_refl : forall p1 p2 : Point,
-  eqp_b p1 p2 = true <-> eqp p1 p2.
-Proof. intros. unfold eqp. apply iff_refl. Defined.
 
 Definition eql_b (l1 l2 : Line) :=
   match l1, l2 with
@@ -336,10 +324,6 @@ Definition isAffine_b p :=
 
 Definition isAffine p := isAffine_b p = true.
 
-Lemma isAffine_refl : forall (p : Point),
-  isAffine_b p = true <-> isAffine p.
-Proof. intros p. unfold isAffine. apply iff_refl. Defined.
-
 Inductive LineSeg :=
   | lineSeg : forall (p q : Point), ~eqp p q -> isAffine p -> isAffine q -> LineSeg.
 
@@ -419,12 +403,6 @@ refine (
   unfold sameLine in evDistinct; rewrite -> evDistinct in contra;
   inversion contra.
 Defined.
-
-Definition lineSegMeetsLineSeg (l m : LineSeg) := lineSegMeetsLineSeg_b l m = true.
-
-Lemma lineSegMeetsLineSeg_refl : forall (l m : LineSeg),
-  lineSegMeetsLineSeg_b l m = true <-> lineSegMeetsLineSeg l m.
-Proof. intros. unfold lineSegMeetsLineSeg. apply iff_refl. Defined.
 
 Definition lineSegMeetsLineSegClosed_b (l m : LineSeg) :=
   match l, m with

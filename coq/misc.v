@@ -18,7 +18,6 @@ Notation " g @ f " := (compose g f) (at level 40, left associativity) : program_
 Fixpoint allCuts' {X : Type} (l l' : list X) : list (prod X (list X)) :=
   match l' with
   | [] => []
-  | x::[] => [(x, l)]
   | x::t => (x, t++l) :: allCuts' (l++[x]) t
   end.
 
@@ -97,7 +96,7 @@ Proof.
   rewrite -> (test_field x y Hy) in Hq'. contradiction.
 Defined.
 
-(* TODO Collapse Qc_eq_bool_correct' variants into single lemma *)
+(* TODO Use reflection properly to eliminate the insanity of these various Qc_eq_bool_correct lemmata *)
 Lemma Qc_eq_bool_correct' : forall x y : Qc,
   Qc_eq_bool x y = false -> x <> y.
 Proof.
@@ -164,16 +163,24 @@ Defined.
 Lemma det2_vanishing_symmetry : forall a b c d,
   Qc_eq_bool (det2 a b c d) 0 = Qc_eq_bool (det2 c d a b) 0.
 Proof.
-  assert (H : forall a b c d, a*d - b*c = 0 <-> c*b - d*a = 0). {
-    intros a b c d. assert (H' : a*d - b*c = -(c*b - d*a) ). { ring. }
+  assert (H : forall a b c d, det2 a b c d = 0 <-> det2 c d a b = 0). {
+    intros a b c d. unfold det2. assert (H' : a*d - b*c = -(c*b - d*a) ). { ring. }
     rewrite -> H'. split; apply Qc_opp_x_zero.
   }
   intros a b c d.
   destruct (Qc_eq_bool (det2 a b c d)) eqn:H1; destruct (Qc_eq_bool (det2 c d a b)) eqn:H2; try reflexivity.
   - apply Qc_eq_bool_correct in H1. apply Qc_eq_bool_correct' in H2. exfalso. unfold not in H2. apply H2.
-    unfold det2. unfold det2 in H1. apply H. assumption.
+    apply H. assumption.
   - apply Qc_eq_bool_correct' in H1. apply Qc_eq_bool_correct in H2. exfalso. unfold not in H1. apply H1.
-    unfold det2. unfold det2 in H2. apply H. assumption.
+    apply H. assumption.
+Defined.
+
+Lemma solve_det2 : forall a b c d : Qc,
+  d <> 0 -> d*a = c*b -> a = b / d * c.
+Proof.
+  intros a b c d Hd Heq.
+  assert (H : d * a / d = a). { field. apply Hd. }
+  rewrite <- H. rewrite -> Heq. field. apply Hd.
 Defined.
 
 Definition det3 (a b c

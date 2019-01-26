@@ -90,10 +90,6 @@ Definition isPointInsideViewPort_b (p : Point) (v : ViewPort) : bool :=
 Definition isPointInsideViewPort (p : Point) (v : ViewPort) :=
   isPointInsideViewPort_b p v = true.
 
-Lemma isPointInsideViewPort_refl : forall (p : Point) (v : ViewPort),
-  isPointInsideViewPort_b p v = true <-> isPointInsideViewPort p v.
-Proof. intros. unfold isPointInsideViewPort. apply iff_refl. Defined.
-
 Lemma flipped_viewport_same_inside : forall (p : Point) (v : ViewPort),
   isPointInsideViewPort p v -> isPointInsideViewPort p (flipViewPort v).
 Proof.
@@ -212,14 +208,7 @@ Defined.
 
 Lemma clipping_point_affine : forall (p : Point) (v : ViewPort) (evInside : isPointInsideViewPort p v),
   isAffine (viewPortClippingPoint p v evInside).
-Proof.
-  intros p v evInside.
-  destruct p as [[x y z] evP]. destruct v as [[[x1 y1 z1] evE] [[[x2 y2 z2] evA] [[x3 y3 z3] evB] evL] evAffE evV].
-  unfold viewPortClippingPoint. unfold vpBackLine. unfold lineFromLineSeg. unfold linePairIntersection. unfold viewPortClippingLine.
-  unfold vpEye. unfold pointPairLine. unfold polar. unfold isAffine. unfold isAffine_b. apply negb_true_iff. apply Qc_eq_bool_correct''.
-  unfold det2. unfold not. intros H. unfold not in evV. apply evV. unfold lineFromLineSeg. unfold pointPairLine.
-  unfold polar. unfold isPointOnLine. unfold isPointOnLine_b. unfold isOrthogonal_b. apply Qc_eq_bool_correct'''.
-Admitted.
+Proof. (* TODO *) Admitted.
 
 Definition vpLineSegClipA (p : Point) (v : ViewPort) (evInside : isPointInsideViewPort p v) : LineSeg.
 refine (
